@@ -42,7 +42,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 단위 변환기 초기화
     initializeUnitConverter();
+
+    // 저장된 언어 설정 불러오기
+    const savedLanguage = localStorage.getItem('preferred-language');
+    let lang = 'ko';
+    if (savedLanguage && calculatorTranslations[savedLanguage]) {
+        lang = savedLanguage;
+    } else {
+        // 브라우저 언어 감지
+        const browserLang = navigator.language.split('-')[0];
+        if (calculatorTranslations[browserLang]) {
+            lang = browserLang;
+        }
+    }
+    // 언어 선택기 동기화
+    const languageSelect = document.getElementById('language-select');
+    if (languageSelect) {
+        languageSelect.value = lang;
+    }
+    // 언어 적용
+    changeLanguage(lang);
 });
+
+function changeLanguage(lang) {
+    currentLanguage = lang;
+    updateCalculatorPageLanguage();
+    localStorage.setItem('preferred-language', lang);
+    // HTML lang 속성 업데이트
+    document.documentElement.lang = lang;
+    // 언어 선택기 동기화
+    const languageSelect = document.getElementById('language-select');
+    if (languageSelect) {
+        languageSelect.value = lang;
+    }
+}
 
 // 기본 계산기 함수들
 function appendNumber(number) {

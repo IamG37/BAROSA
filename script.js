@@ -1,5 +1,25 @@
 // DOM이 로드된 후 실행
 document.addEventListener('DOMContentLoaded', function() {
+    // 저장된 언어 설정 불러오기
+    const savedLanguage = localStorage.getItem('preferred-language');
+    let lang = 'ko';
+    if (savedLanguage && translations[savedLanguage]) {
+        lang = savedLanguage;
+    } else {
+        // 브라우저 언어 감지
+        const browserLang = navigator.language.split('-')[0];
+        if (translations[browserLang]) {
+            lang = browserLang;
+        }
+    }
+    // 언어 선택기 동기화
+    const languageSelect = document.getElementById('language-select');
+    if (languageSelect) {
+        languageSelect.value = lang;
+    }
+    // 언어 적용
+    changeLanguage(lang);
+    
     // 네비게이션 활성화
     initNavigation();
     
