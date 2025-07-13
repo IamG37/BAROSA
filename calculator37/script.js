@@ -339,32 +339,39 @@ function initializeUnitConverter() {
     function populateUnits() {
         const type = unitType.value;
         const units = unitData[type].units;
-        
         fromUnit.innerHTML = '';
         toUnit.innerHTML = '';
-        
-        units.forEach(unit => {
+        units.forEach(unitKey => {
             const fromOption = document.createElement('option');
-            fromOption.value = unit;
-            fromOption.textContent = unit;
+            fromOption.value = unitKey;
+            fromOption.setAttribute('data-i18n', 'unit.option.' + unitKey);
+            fromOption.textContent = getUnitTranslation(unitKey);
             fromUnit.appendChild(fromOption);
-            
+
             const toOption = document.createElement('option');
-            toOption.value = unit;
-            toOption.textContent = unit;
+            toOption.value = unitKey;
+            toOption.setAttribute('data-i18n', 'unit.option.' + unitKey);
+            toOption.textContent = getUnitTranslation(unitKey);
             toUnit.appendChild(toOption);
         });
-        
         // 기본값 설정
         if (units.length > 1) {
             toUnit.selectedIndex = 1;
         }
-        
         convertUnit();
     }
 
     unitType.addEventListener('change', populateUnits);
     populateUnits();
+}
+
+function getUnitTranslation(unitKey) {
+    // 번역 키가 있으면 번역, 없으면 원본 반환
+    const lang = localStorage.getItem('preferred-language') || 'ko';
+    if (calculatorTranslations[lang] && calculatorTranslations[lang]['unit.option.' + unitKey]) {
+        return calculatorTranslations[lang]['unit.option.' + unitKey];
+    }
+    return unitKey;
 }
 
 function changeUnitType() {
