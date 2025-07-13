@@ -1,541 +1,204 @@
-// 전역 변수
-let currentOperand = '0';
-let previousOperand = '';
-let operation = undefined;
-let shouldResetScreen = false;
-
-// 기본 계산기 변수
-let sciCurrentOperand = '0';
-let sciPreviousOperand = '';
-let sciOperation = undefined;
-let sciShouldResetScreen = false;
-
-// DOM 요소들
-const currentOperandElement = document.getElementById('current-operand');
-const previousOperandElement = document.getElementById('previous-operand');
-const sciCurrentOperandElement = document.getElementById('sci-current-operand');
-const sciPreviousOperandElement = document.getElementById('sci-previous-operand');
-
-// 네비게이션 기능
+// DOM이 로드된 후 실행
 document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('.calculator-section');
+    // 네비게이션 활성화
+    initNavigation();
+    
+    // 스크롤 효과
+    initScrollEffects();
+    
+    // 버튼 이벤트
+    initButtonEvents();
+    
+    // 광고 애니메이션
+    initAdAnimations();
+    
+    // 서비스 카드 호버 효과
+    initServiceCardEffects();
+});
 
+// 네비게이션 활성화
+function initNavigation() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section[id]');
+    
+    // 스크롤 시 네비게이션 활성화
+    window.addEventListener('scroll', () => {
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            
+            if (scrollY >= (sectionTop - 200)) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+    
+    // 네비게이션 클릭 시 부드러운 스크롤
     navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
+        link.addEventListener('click', (e) => {
             e.preventDefault();
+            const targetId = link.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
             
-            // 활성 링크 업데이트
-            navLinks.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
+            if (targetSection) {
+                targetSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+}
+
+// 스크롤 효과
+function initScrollEffects() {
+    // 스크롤 시 헤더 스타일 변경
+    const header = document.querySelector('.header');
+    
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 100) {
+            header.style.background = 'rgba(102, 126, 234, 0.95)';
+            header.style.backdropFilter = 'blur(10px)';
+        } else {
+            header.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            header.style.backdropFilter = 'none';
+        }
+    });
+    
+    // 스크롤 시 요소들 페이드인
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // 관찰할 요소들
+    const animatedElements = document.querySelectorAll('.service-card, .ad-card, .section-title');
+    animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+}
+
+// 버튼 이벤트
+function initButtonEvents() {
+    // CTA 버튼
+    const ctaButton = document.querySelector('.cta-button');
+    if (ctaButton) {
+        ctaButton.addEventListener('click', () => {
+            // Calculator37로 스크롤
+            const servicesSection = document.querySelector('#services');
+            if (servicesSection) {
+                servicesSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    }
+}
+
+// 광고 애니메이션
+function initAdAnimations() {
+    // 사이드 광고 호버 효과
+    const adCards = document.querySelectorAll('.ad-card');
+    adCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateX(-10px) scale(1.05)';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateX(0) scale(1)';
+        });
+    });
+    
+    // 배너 광고 플레이스홀더 애니메이션
+    const adPlaceholders = document.querySelectorAll('.ad-placeholder, .ad-placeholder-small, .ad-placeholder-horizontal');
+    adPlaceholders.forEach(placeholder => {
+        setInterval(() => {
+            placeholder.style.borderColor = placeholder.classList.contains('ad-placeholder') || placeholder.classList.contains('ad-placeholder-horizontal') 
+                ? 'rgba(255,255,255,0.6)' 
+                : '#adb5bd';
+            setTimeout(() => {
+                placeholder.style.borderColor = placeholder.classList.contains('ad-placeholder') || placeholder.classList.contains('ad-placeholder-horizontal')
+                    ? 'rgba(255,255,255,0.3)'
+                    : '#dee2e6';
+            }, 1000);
+        }, 3000);
+    });
+}
+
+// 서비스 카드 호버 효과
+function initServiceCardEffects() {
+    const serviceCards = document.querySelectorAll('.service-card');
+    
+    serviceCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            // 카드 내부 요소들 애니메이션
+            const icon = card.querySelector('.service-icon');
+            const title = card.querySelector('h3');
+            const features = card.querySelectorAll('.feature-tag');
             
-            // 섹션 표시
-            const targetId = this.getAttribute('href').substring(1);
-            sections.forEach(section => {
-                section.classList.remove('active');
-                if (section.id === targetId) {
-                    section.classList.add('active');
-                }
+            if (icon) icon.style.transform = 'scale(1.1) rotate(5deg)';
+            if (title) title.style.color = '#667eea';
+            
+            features.forEach((feature, index) => {
+                setTimeout(() => {
+                    feature.style.transform = 'translateY(-3px)';
+                }, index * 100);
+            });
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            const icon = card.querySelector('.service-icon');
+            const title = card.querySelector('h3');
+            const features = card.querySelectorAll('.feature-tag');
+            
+            if (icon) icon.style.transform = 'scale(1) rotate(0deg)';
+            if (title) title.style.color = '#333';
+            
+            features.forEach(feature => {
+                feature.style.transform = 'translateY(0)';
             });
         });
     });
-
-    // 단위 변환기 초기화
-    initializeUnitConverter();
-});
-
-// 기본 계산기 함수들
-function appendNumber(number) {
-    if (shouldResetScreen) {
-        currentOperand = '';
-        shouldResetScreen = false;
-    }
-    if (number === '.' && currentOperand.includes('.')) return;
-    if (currentOperand === '0' && number !== '.') {
-        currentOperand = number;
-    } else {
-        currentOperand += number;
-    }
-    updateDisplay();
 }
 
-function appendOperator(operator) {
-    if (currentOperand === '') return;
-    if (previousOperand !== '') {
-        calculate();
-    }
-    operation = operator;
-    previousOperand = currentOperand;
-    currentOperand = '';
-    updateDisplay();
-}
-
-function calculate() {
-    let computation;
-    const prev = parseFloat(previousOperand);
-    const current = parseFloat(currentOperand);
-    if (isNaN(prev) || isNaN(current)) return;
-
-    switch (operation) {
-        case '+':
-            computation = prev + current;
-            break;
-        case '-':
-            computation = prev - current;
-            break;
-        case '×':
-            computation = prev * current;
-            break;
-        case '÷':
-            if (current === 0) {
-                alert('0으로 나눌 수 없습니다!');
-                return;
-            }
-            computation = prev / current;
-            break;
-        case '%':
-            computation = prev % current;
-            break;
-        default:
-            return;
-    }
-
-    currentOperand = computation.toString();
-    operation = undefined;
-    previousOperand = '';
-    shouldResetScreen = true;
-    updateDisplay();
-}
-
-function clearAll() {
-    currentOperand = '0';
-    previousOperand = '';
-    operation = undefined;
-    updateDisplay();
-}
-
-function deleteLast() {
-    if (currentOperand.length === 1) {
-        currentOperand = '0';
-    } else {
-        currentOperand = currentOperand.slice(0, -1);
-    }
-    updateDisplay();
-}
-
-function appendDecimal() {
-    if (shouldResetScreen) {
-        currentOperand = '0';
-        shouldResetScreen = false;
-    }
-    if (currentOperand.includes('.')) return;
-    currentOperand += '.';
-    updateDisplay();
-}
-
-function updateDisplay() {
-    currentOperandElement.textContent = currentOperand;
-    if (operation != null) {
-        previousOperandElement.textContent = `${previousOperand} ${operation}`;
-    } else {
-        previousOperandElement.textContent = '';
-    }
-}
-
-// 공학용 계산기 함수들
-function appendScientificNumber(number) {
-    if (sciShouldResetScreen) {
-        sciCurrentOperand = '';
-        sciShouldResetScreen = false;
-    }
-    if (number === '.' && sciCurrentOperand.includes('.')) return;
-    if (sciCurrentOperand === '0' && number !== '.') {
-        sciCurrentOperand = number;
-    } else {
-        sciCurrentOperand += number;
-    }
-    updateScientificDisplay();
-}
-
-function appendScientificOperator(operator) {
-    if (sciCurrentOperand === '') return;
-    if (sciPreviousOperand !== '') {
-        calculateScientific();
-    }
-    sciOperation = operator;
-    sciPreviousOperand = sciCurrentOperand;
-    sciCurrentOperand = '';
-    updateScientificDisplay();
-}
-
-function scientificFunction(func) {
-    const current = parseFloat(sciCurrentOperand);
-    if (isNaN(current)) return;
-
-    let result;
-    switch (func) {
-        case 'sin':
-            result = Math.sin(current * Math.PI / 180);
-            break;
-        case 'cos':
-            result = Math.cos(current * Math.PI / 180);
-            break;
-        case 'tan':
-            result = Math.tan(current * Math.PI / 180);
-            break;
-        case 'log':
-            if (current <= 0) {
-                alert('양수만 로그를 계산할 수 있습니다!');
-                return;
-            }
-            result = Math.log10(current);
-            break;
-        case 'ln':
-            if (current <= 0) {
-                alert('양수만 자연로그를 계산할 수 있습니다!');
-                return;
-            }
-            result = Math.log(current);
-            break;
-        case 'sqrt':
-            if (current < 0) {
-                alert('음수의 제곱근은 계산할 수 없습니다!');
-                return;
-            }
-            result = Math.sqrt(current);
-            break;
-    }
-
-    sciCurrentOperand = result.toString();
-    updateScientificDisplay();
-}
-
-function calculateScientific() {
-    let computation;
-    const prev = parseFloat(sciPreviousOperand);
-    const current = parseFloat(sciCurrentOperand);
-    if (isNaN(prev) || isNaN(current)) return;
-
-    switch (sciOperation) {
-        case '+':
-            computation = prev + current;
-            break;
-        case '-':
-            computation = prev - current;
-            break;
-        case '×':
-            computation = prev * current;
-            break;
-        case '÷':
-            if (current === 0) {
-                alert('0으로 나눌 수 없습니다!');
-                return;
-            }
-            computation = prev / current;
-            break;
-        case '^':
-            computation = Math.pow(prev, current);
-            break;
-        default:
-            return;
-    }
-
-    sciCurrentOperand = computation.toString();
-    sciOperation = undefined;
-    sciPreviousOperand = '';
-    sciShouldResetScreen = true;
-    updateScientificDisplay();
-}
-
-function clearScientific() {
-    sciCurrentOperand = '0';
-    sciPreviousOperand = '';
-    sciOperation = undefined;
-    updateScientificDisplay();
-}
-
-function appendScientificDecimal() {
-    if (sciShouldResetScreen) {
-        sciCurrentOperand = '0';
-        sciShouldResetScreen = false;
-    }
-    if (sciCurrentOperand.includes('.')) return;
-    sciCurrentOperand += '.';
-    updateScientificDisplay();
-}
-
-function updateScientificDisplay() {
-    sciCurrentOperandElement.textContent = sciCurrentOperand;
-    if (sciOperation != null) {
-        sciPreviousOperandElement.textContent = `${sciPreviousOperand} ${sciOperation}`;
-    } else {
-        sciPreviousOperandElement.textContent = '';
-    }
-}
-
-// 단위 변환기
-const unitData = {
-    length: {
-        units: ['미터', '킬로미터', '센티미터', '밀리미터', '인치', '피트', '야드', '마일'],
-        conversions: {
-            '미터': 1,
-            '킬로미터': 1000,
-            '센티미터': 0.01,
-            '밀리미터': 0.001,
-            '인치': 0.0254,
-            '피트': 0.3048,
-            '야드': 0.9144,
-            '마일': 1609.344
-        }
-    },
-    weight: {
-        units: ['그램', '킬로그램', '밀리그램', '톤', '파운드', '온스'],
-        conversions: {
-            '그램': 1,
-            '킬로그램': 1000,
-            '밀리그램': 0.001,
-            '톤': 1000000,
-            '파운드': 453.592,
-            '온스': 28.3495
-        }
-    },
-    temperature: {
-        units: ['섭씨', '화씨', '켈빈'],
-        conversions: {
-            '섭씨': 'celsius',
-            '화씨': 'fahrenheit',
-            '켈빈': 'kelvin'
-        }
-    },
-    area: {
-        units: ['제곱미터', '제곱킬로미터', '제곱센티미터', '헥타르', '에이커', '제곱피트'],
-        conversions: {
-            '제곱미터': 1,
-            '제곱킬로미터': 1000000,
-            '제곱센티미터': 0.0001,
-            '헥타르': 10000,
-            '에이커': 4046.86,
-            '제곱피트': 0.092903
-        }
-    },
-    volume: {
-        units: ['리터', '밀리리터', '세제곱미터', '갤런', '파인트', '쿼트'],
-        conversions: {
-            '리터': 1,
-            '밀리리터': 0.001,
-            '세제곱미터': 1000,
-            '갤런': 3.78541,
-            '파인트': 0.473176,
-            '쿼트': 0.946353
-        }
-    }
-};
-
-function initializeUnitConverter() {
-    const unitType = document.getElementById('unit-type');
-    const fromUnit = document.getElementById('from-unit');
-    const toUnit = document.getElementById('to-unit');
-
-    function populateUnits() {
-        const type = unitType.value;
-        const units = unitData[type].units;
-        
-        fromUnit.innerHTML = '';
-        toUnit.innerHTML = '';
-        
-        units.forEach(unit => {
-            const fromOption = document.createElement('option');
-            fromOption.value = unit;
-            fromOption.textContent = unit;
-            fromUnit.appendChild(fromOption);
-            
-            const toOption = document.createElement('option');
-            toOption.value = unit;
-            toOption.textContent = unit;
-            toUnit.appendChild(toOption);
-        });
-        
-        // 기본값 설정
-        if (units.length > 1) {
-            toUnit.selectedIndex = 1;
-        }
-        
-        convertUnit();
-    }
-
-    unitType.addEventListener('change', populateUnits);
-    populateUnits();
-}
-
-function changeUnitType() {
-    initializeUnitConverter();
-}
-
-function convertUnit() {
-    const fromValue = parseFloat(document.getElementById('from-value').value);
-    const fromUnit = document.getElementById('from-unit').value;
-    const toUnit = document.getElementById('to-unit').value;
-    const unitType = document.getElementById('unit-type').value;
-    
-    if (isNaN(fromValue)) {
-        document.getElementById('to-value').value = '';
-        return;
-    }
-    
-    let result;
-    
-    if (unitType === 'temperature') {
-        result = convertTemperature(fromValue, fromUnit, toUnit);
-    } else {
-        const conversions = unitData[unitType].conversions;
-        const fromFactor = conversions[fromUnit];
-        const toFactor = conversions[toUnit];
-        result = (fromValue * fromFactor) / toFactor;
-    }
-    
-    document.getElementById('to-value').value = result.toFixed(6);
-}
-
-function convertTemperature(value, fromUnit, toUnit) {
-    let celsius;
-    
-    // 입력값을 섭씨로 변환
-    switch (fromUnit) {
-        case '섭씨':
-            celsius = value;
-            break;
-        case '화씨':
-            celsius = (value - 32) * 5/9;
-            break;
-        case '켈빈':
-            celsius = value - 273.15;
-            break;
-    }
-    
-    // 섭씨에서 목표 단위로 변환
-    switch (toUnit) {
-        case '섭씨':
-            return celsius;
-        case '화씨':
-            return celsius * 9/5 + 32;
-        case '켈빈':
-            return celsius + 273.15;
-    }
-}
-
-function swapUnits() {
-    const fromUnit = document.getElementById('from-unit');
-    const toUnit = document.getElementById('to-unit');
-    const fromValue = document.getElementById('from-value');
-    const toValue = document.getElementById('to-value');
-    
-    const tempUnit = fromUnit.value;
-    const tempValue = fromValue.value;
-    
-    fromUnit.value = toUnit.value;
-    toUnit.value = tempUnit;
-    fromValue.value = toValue.value;
-    
-    convertUnit();
-}
-
-// 금융 계산기
-function calculateInterest() {
-    const principal = parseFloat(document.getElementById('principal').value);
-    const rate = parseFloat(document.getElementById('rate').value);
-    const time = parseFloat(document.getElementById('time').value);
-    
-    if (isNaN(principal) || isNaN(rate) || isNaN(time)) {
-        document.getElementById('interest-result').innerHTML = '모든 값을 입력해주세요.';
-        return;
-    }
-    
-    const interest = principal * (rate / 100) * time;
-    const total = principal + interest;
-    
-    document.getElementById('interest-result').innerHTML = `
-        <strong>계산 결과:</strong><br>
-        원금: ${principal.toLocaleString()}원<br>
-        이자: ${interest.toLocaleString()}원<br>
-        총액: ${total.toLocaleString()}원
-    `;
-}
-
-function calculateLoan() {
-    const amount = parseFloat(document.getElementById('loan-amount').value);
-    const rate = parseFloat(document.getElementById('loan-rate').value);
-    const term = parseFloat(document.getElementById('loan-term').value);
-    
-    if (isNaN(amount) || isNaN(rate) || isNaN(term)) {
-        document.getElementById('loan-result').innerHTML = '모든 값을 입력해주세요.';
-        return;
-    }
-    
-    const monthlyRate = rate / 100 / 12;
-    const numberOfPayments = term * 12;
-    
-    if (monthlyRate === 0) {
-        const monthlyPayment = amount / numberOfPayments;
-        const totalPayment = amount;
-        
-        document.getElementById('loan-result').innerHTML = `
-            <strong>계산 결과:</strong><br>
-            월 상환금: ${monthlyPayment.toLocaleString()}원<br>
-            총 상환금: ${totalPayment.toLocaleString()}원<br>
-            총 이자: 0원
-        `;
-    } else {
-        const monthlyPayment = amount * (monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments)) / 
-                              (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
-        const totalPayment = monthlyPayment * numberOfPayments;
-        const totalInterest = totalPayment - amount;
-        
-        document.getElementById('loan-result').innerHTML = `
-            <strong>계산 결과:</strong><br>
-            월 상환금: ${monthlyPayment.toLocaleString()}원<br>
-            총 상환금: ${totalPayment.toLocaleString()}원<br>
-            총 이자: ${totalInterest.toLocaleString()}원
-        `;
-    }
-}
-
-// 키보드 지원
-document.addEventListener('keydown', function(event) {
-    const key = event.key;
-    
-    if (key >= '0' && key <= '9' || key === '.') {
-        appendNumber(key);
-    } else if (key === '+' || key === '-') {
-        appendOperator(key);
-    } else if (key === '*') {
-        appendOperator('×');
-    } else if (key === '/') {
-        appendOperator('÷');
-    } else if (key === 'Enter' || key === '=') {
-        calculate();
-    } else if (key === 'Backspace') {
-        deleteLast();
-    } else if (key === 'Escape') {
-        clearAll();
-    }
-});
-
-// 광고 시뮬레이션 (실제 광고 코드로 교체 가능)
-function simulateAd() {
-    const adBanner = document.getElementById('ad-banner');
-    const sideAd = document.getElementById('side-ad');
-    
-    // 실제 광고 코드를 여기에 삽입
-    // 예: Google AdSense, Amazon Associates 등
-    
-    console.log('광고 영역 - 실제 광고 코드로 교체하세요');
-}
-
-// 페이지 로드 시 광고 초기화
+// 페이지 로드 완료 후 추가 초기화
 window.addEventListener('load', function() {
-    simulateAd();
+    // 로딩 애니메이션
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.5s ease';
     
-    // 계산기 초기화
-    updateDisplay();
-    updateScientificDisplay();
+    setTimeout(() => {
+        document.body.style.opacity = '1';
+    }, 100);
+    
+    // 서비스 카드 애니메이션
+    const serviceCards = document.querySelectorAll('.service-card');
+    serviceCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 200);
+    });
 }); 

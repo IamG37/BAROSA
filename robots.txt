@@ -1,4 +1,19 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://your-username.github.io/y1/sitemap.xml 
+# 메인페이지
+Allow: /index.html
+Allow: /styles.css
+Allow: /script.js
+
+# Calculator37 서비스
+Allow: /calculator37/
+Allow: /calculator37/index.html
+Allow: /calculator37/styles.css
+Allow: /calculator37/script.js
+
+# 사이트맵
+Sitemap: https://barosa.shop/sitemap.xml
+
+# 크롤링 지연 (선택사항)
+Crawl-delay: 1 

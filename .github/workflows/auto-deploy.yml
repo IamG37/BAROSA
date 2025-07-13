@@ -1,0 +1,54 @@
+name: Auto Deploy
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - '**/*.html'
+      - '**/*.css'
+      - '**/*.js'
+      - '**/*.xml'
+      - '**/*.txt'
+      - '**/*.md'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup Git
+      run: |
+        git config --global user.name 'GitHub Action'
+        git config --global user.email 'action@github.com'
+
+    - name: Check for changes
+      id: check_changes
+      run: |
+        git add -A
+        if git diff --staged --quiet; then
+          echo "changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "changes=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Commit and push if changes exist
+      if: steps.check_changes.outputs.changes == 'true'
+      run: |
+        git add -A
+        git commit -m "Auto deploy: $(date '+%Y-%m-%d %H:%M:%S') - 자동 배포"
+        git push origin ${{ github.ref }}
+
+    - name: Deploy to GitHub Pages
+      if: steps.check_changes.outputs.changes == 'true'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
+        publish_branch: gh-pages
+        cname: barosa.shop 

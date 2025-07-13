@@ -1,34 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     
-    <!-- 메인페이지 -->
-    <url>
-        <loc>https://barosa.shop/</loc>
-        <lastmod>2024-01-01</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>1.0</priority>
-    </url>
-    
-    <url>
-        <loc>https://barosa.shop/index.html</loc>
-        <lastmod>2024-01-01</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>1.0</priority>
-    </url>
-    
-    <!-- Calculator37 서비스 -->
+    <!-- Calculator37 메인페이지 -->
     <url>
         <loc>https://barosa.shop/calculator37/</loc>
         <lastmod>2024-01-01</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.9</priority>
+        <priority>1.0</priority>
     </url>
     
     <url>
         <loc>https://barosa.shop/calculator37/index.html</loc>
         <lastmod>2024-01-01</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.9</priority>
+        <priority>1.0</priority>
     </url>
     
     <!-- Calculator37 서브페이지들 -->
@@ -36,28 +21,28 @@
         <loc>https://barosa.shop/calculator37/#basic</loc>
         <lastmod>2024-01-01</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.9</priority>
     </url>
     
     <url>
         <loc>https://barosa.shop/calculator37/#scientific</loc>
         <lastmod>2024-01-01</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.9</priority>
     </url>
     
     <url>
         <loc>https://barosa.shop/calculator37/#unit</loc>
         <lastmod>2024-01-01</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.9</priority>
     </url>
     
     <url>
         <loc>https://barosa.shop/calculator37/#finance</loc>
         <lastmod>2024-01-01</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.9</priority>
     </url>
     
 </urlset> 

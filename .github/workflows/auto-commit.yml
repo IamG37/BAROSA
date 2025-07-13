@@ -1,0 +1,42 @@
+name: Auto Commit and Push
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+  schedule:
+    # 매일 자정에 실행 (선택사항)
+    - cron: '0 0 * * *'
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Setup Git
+      run: |
+        git config --global user.name 'GitHub Action'
+        git config --global user.email 'action@github.com'
+
+    - name: Check for changes
+      id: check_changes
+      run: |
+        git add -A
+        if git diff --staged --quiet; then
+          echo "changes=false" >> $GITHUB_OUTPUT
+        else
+          echo "changes=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Commit and push if changes exist
+      if: steps.check_changes.outputs.changes == 'true'
+      run: |
+        git add -A
+        git commit -m "Auto commit: $(date '+%Y-%m-%d %H:%M:%S') - 자동 업데이트"
+        git push origin ${{ github.ref }} 
