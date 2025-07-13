@@ -139,41 +139,6 @@ main {
     position: relative;
 }
 
-/* 광고 배너 */
-.ad-banner {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    padding: 1rem;
-    margin-bottom: 2rem;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.ad-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    color: #666;
-    font-size: 0.9rem;
-    min-height: 60px;
-    background: #dadbdb;
-    border-radius: 10px;
-    border: 2px dashed #88dba3;
-}
-
-.side-ad {
-    position: fixed;
-    right: 2rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 160px;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 15px;
-    padding: 1rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
 /* 계산기 섹션 */
 .calculator-section {
     display: none;
@@ -555,10 +520,6 @@ footer {
     
     main {
         padding: 1rem;
-    }
-    
-    .side-ad {
-        display: none;
     }
     
     .converter-inputs {
